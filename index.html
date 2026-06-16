@@ -1,7 +1,747 @@
 <!DOCTYPE html>
-<html>
+<!-- ============================================================
+     維治 (Wei-Chih) 個人介紹網站
+     純 HTML + CSS + JavaScript，無框架，可直接部署到 GitHub Pages
+     如需修改，請搜尋 TODO 或 [YOUR_XXX] 找到要填入真實資訊的地方
+     ============================================================ -->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <!-- RWD：讓網站在手機上正確縮放 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- SEO 與分享用的網站描述，可自行調整 -->
+  <meta name="description" content="維治 — Full-Stack Web Developer，專注於 .NET 與 Azure 的網站解決方案。" />
+  <title>維治 | Full-Stack Web Developer</title>
+
+  <!-- 載入 Google Fonts：Inter（英文字型）。中文交由系統字型處理 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       CSS 變數：集中管理顏色、字型、間距，方便日後一次調整
+       ============================================================ */
+    :root {
+      --color-primary: #1e3a8a;        /* 主強調色：深藍 / 靛藍 */
+      --color-primary-light: #3b5bdb;  /* 較亮的藍，用於 hover */
+      --color-bg: #ffffff;             /* 主背景：白 */
+      --color-bg-soft: #f5f6f8;        /* 輔助背景：淺灰 */
+      --color-text: #1a1a2e;           /* 主要文字色 */
+      --color-text-soft: #5b6472;      /* 次要文字色（灰） */
+      --color-border: #e4e7ec;         /* 邊框淺灰 */
+      --color-card: #ffffff;           /* 卡片底色 */
+
+      /* 英文用 Inter，中文 fallback 到系統字型 */
+      --font-base: "Inter", "Microsoft JhengHei", "PingFang TC",
+                   "Noto Sans TC", -apple-system, BlinkMacSystemFont, sans-serif;
+
+      --max-width: 1080px;             /* 內容最大寬度 */
+      --radius: 14px;                  /* 圓角 */
+      --shadow: 0 4px 24px rgba(20, 30, 60, 0.06); /* 卡片陰影 */
+    }
+
+    /* ============================================================
+       基礎重置與全域樣式
+       ============================================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;          /* 點選錨點時平滑捲動 */
+      scroll-padding-top: 80px;         /* 避免固定 navbar 遮住標題 */
+    }
+
+    body {
+      font-family: var(--font-base);
+      color: var(--color-text);
+      background: var(--color-bg);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* 共用容器：置中、限制最大寬度、左右留白 */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* 每個區塊的上下間距 */
+    section {
+      padding: 96px 0;
+    }
+
+    /* 區塊標題共用樣式 */
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--color-text);
+    }
+
+    .section-subtitle {
+      color: var(--color-text-soft);
+      margin-bottom: 48px;
+      font-size: 1.05rem;
+    }
+
+    /* ============================================================
+       Navbar：固定在頂部
+       ============================================================ */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);      /* 毛玻璃效果 */
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+
+    .nav-logo {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--color-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--color-text-soft);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--color-primary); }
+
+    /* 漢堡選單按鈕，預設隱藏（只在手機顯示） */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.6rem;
+      color: var(--color-text);
+    }
+
+    /* ============================================================
+       Hero 區塊
+       ============================================================ */
+    .hero {
+      padding: 180px 0 120px;
+      background: linear-gradient(180deg, var(--color-bg-soft) 0%, var(--color-bg) 100%);
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero .highlight { color: var(--color-primary); }
+
+    .hero .tagline {
+      font-size: 1.4rem;
+      color: var(--color-text-soft);
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    .hero .badges {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+
+    .badge {
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 0.9rem;
+      color: var(--color-text-soft);
+      font-weight: 500;
+    }
+
+    /* 按鈕共用樣式 */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 26px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--color-primary-light);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+    .btn-outline:hover {
+      background: var(--color-primary);
+      color: #fff;
+    }
+
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    /* ============================================================
+       About 區塊
+       ============================================================ */
+    #about .about-text {
+      font-size: 1.1rem;
+      color: var(--color-text-soft);
+      max-width: 760px;
+    }
+    #about .about-text p { margin-bottom: 18px; }
+    #about .about-text strong { color: var(--color-text); }
+
+    /* ============================================================
+       Skills 區塊
+       ============================================================ */
+    #skills { background: var(--color-bg-soft); }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .skill-card {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .skill-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 16px;
+      color: var(--color-primary);
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .tag {
+      background: var(--color-bg-soft);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    /* ============================================================
+       Experience 區塊（時間軸樣式）
+       ============================================================ */
+    .timeline {
+      border-left: 2px solid var(--color-border);
+      margin-left: 8px;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 0 0 36px 32px;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    /* 時間軸上的圓點 */
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -8px;
+      top: 6px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      border: 3px solid var(--color-bg);
+    }
+
+    .timeline-item h3 {
+      font-size: 1.15rem;
+      margin-bottom: 4px;
+    }
+
+    .timeline-item .meta {
+      color: var(--color-primary);
+      font-weight: 600;
+      font-size: 0.92rem;
+      margin-bottom: 10px;
+    }
+
+    .timeline-item p { color: var(--color-text-soft); }
+
+    /* ============================================================
+       Projects 區塊
+       ============================================================ */
+    #projects { background: var(--color-bg-soft); }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 24px;
+    }
+
+    .project-card {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 32px rgba(20, 30, 60, 0.1);
+    }
+
+    .project-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+    }
+
+    .project-card .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .project-card p {
+      color: var(--color-text-soft);
+      flex-grow: 1;
+      margin-bottom: 20px;
+    }
+
+    /* ============================================================
+       Contact 區塊
+       ============================================================ */
+    #contact { text-align: center; }
+
+    .contact-box {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .contact-box p {
+      color: var(--color-text-soft);
+      margin-bottom: 32px;
+      font-size: 1.1rem;
+    }
+
+    .contact-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ============================================================
+       Footer
+       ============================================================ */
+    footer {
+      background: var(--color-text);
+      color: #cbd2e0;
+      text-align: center;
+      padding: 28px 0;
+      font-size: 0.9rem;
+    }
+
+    /* ============================================================
+       Scroll-in 動畫：元素進入畫面時淡入上移
+       透過 JavaScript 加上 .visible class 觸發
+       ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       RWD：手機版調整（螢幕寬度 <= 768px）
+       ============================================================ */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.2rem; }
+      .hero .tagline { font-size: 1.1rem; }
+      section { padding: 64px 0; }
+
+      /* 顯示漢堡按鈕 */
+      .nav-toggle { display: block; }
+
+      /* 預設收合手機選單 */
+      .nav-links {
+        position: absolute;
+        top: 68px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: #fff;
+        border-bottom: 1px solid var(--color-border);
+        gap: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      .nav-links.open { max-height: 360px; } /* 展開時 */
+      .nav-links li {
+        padding: 14px 24px;
+        border-top: 1px solid var(--color-border);
+      }
+    }
+  </style>
+</head>
+
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+
+  <!-- ============================================================
+       Navbar
+       ============================================================ -->
+  <nav class="navbar">
+    <div class="container">
+      <!-- TODO: 可改成你想要的 Logo 文字 -->
+      <a href="#hero" class="nav-logo">維治</a>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <!-- 手機版漢堡按鈕 -->
+      <button class="nav-toggle" id="navToggle" aria-label="開啟選單">☰</button>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       Hero 區塊
+       ============================================================ -->
+  <header class="hero" id="hero">
+    <div class="container">
+      <h1>嗨，我是 <span class="highlight">維治</span></h1>
+      <p class="tagline">Building robust web solutions with .NET &amp; Azure</p>
+
+      <!-- 核心技術小標籤 -->
+      <div class="badges">
+        <span class="badge">.NET / C#</span>
+        <span class="badge">ASP.NET Core</span>
+        <span class="badge">SQL Server</span>
+        <span class="badge">Microsoft Azure</span>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-primary">查看作品集</a>
+        <a href="#contact" class="btn btn-outline">與我聯絡</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       About 區塊
+       ============================================================ -->
+  <section id="about">
+    <div class="container">
+      <h2 class="section-title reveal">關於我 · About</h2>
+      <p class="section-subtitle reveal">Full-Stack Web Developer</p>
+
+      <div class="about-text reveal">
+        <!-- TODO: 自由修改這段自我介紹文字 -->
+        <p>
+          我是一位 <strong>Full-Stack Web Developer</strong>，
+          專注於使用 <strong>.NET（C#、ASP.NET Core）</strong> 打造穩定、可擴展的後端系統，
+          並熟悉 <strong>SQL Server</strong> 資料庫設計與 <strong>Microsoft Azure</strong> 雲端部署。
+          從 RESTful API、資料庫優化到雲端服務整合，我喜歡把複雜的需求轉化為可靠的解決方案。
+        </p>
+        <p>
+          I'm a full-stack developer specializing in the .NET ecosystem and Microsoft Azure.
+          I enjoy building robust, maintainable web applications — from API design and database
+          optimization to cloud deployment.
+        </p>
+        <p>
+          目前我正在尋求 <strong>全職工作機會</strong>，同時也歡迎 <strong>自由接案</strong> 合作。
+          若有合適的專案，歡迎與我聯絡！
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Skills 區塊
+       ============================================================ -->
+  <section id="skills">
+    <div class="container">
+      <h2 class="section-title reveal">技術能力 · Skills</h2>
+      <p class="section-subtitle reveal">我目前掌握的技術與工具</p>
+
+      <div class="skills-grid">
+        <!-- 後端 -->
+        <div class="skill-card reveal">
+          <h3>後端 Backend</h3>
+          <ul class="tag-list">
+            <li class="tag">C#</li>
+            <li class="tag">ASP.NET Core</li>
+            <li class="tag">RESTful API</li>
+            <li class="tag">Entity Framework</li>
+          </ul>
+        </div>
+
+        <!-- 資料庫 -->
+        <div class="skill-card reveal">
+          <h3>資料庫 Database</h3>
+          <ul class="tag-list">
+            <li class="tag">SQL Server</li>
+            <li class="tag">資料庫設計</li>
+            <li class="tag">效能優化</li>
+          </ul>
+        </div>
+
+        <!-- 雲端 -->
+        <div class="skill-card reveal">
+          <h3>雲端 Cloud</h3>
+          <ul class="tag-list">
+            <li class="tag">Microsoft Azure</li>
+            <li class="tag">服務部署</li>
+            <li class="tag">服務整合</li>
+          </ul>
+        </div>
+
+        <!-- 前端 -->
+        <div class="skill-card reveal">
+          <h3>前端 Frontend</h3>
+          <ul class="tag-list">
+            <li class="tag">HTML</li>
+            <li class="tag">CSS</li>
+            <li class="tag">JavaScript</li>
+          </ul>
+        </div>
+
+        <!-- 其他 -->
+        <div class="skill-card reveal">
+          <h3>其他 Others</h3>
+          <ul class="tag-list">
+            <li class="tag">MES 系統開發</li>
+            <li class="tag">第三方 API 整合</li>
+            <li class="tag">ESG 碳盤查系統</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Experience 區塊
+       格式：職稱 / 公司 / 起迄時間 / 工作內容描述
+       目前為佔位內容，請替換成真實經歷
+       ============================================================ -->
+  <section id="experience">
+    <div class="container">
+      <h2 class="section-title reveal">工作經歷 · Experience</h2>
+      <p class="section-subtitle reveal">我的職涯歷程</p>
+
+      <div class="timeline">
+        <!-- 經歷項目 1 -->
+        <div class="timeline-item reveal">
+          <!-- TODO: 填入職稱 -->
+          <h3>[YOUR_JOB_TITLE 職稱]</h3>
+          <!-- TODO: 填入公司名稱與起迄時間，例如：某某科技公司 · 2022.01 - 2024.06 -->
+          <div class="meta">[YOUR_COMPANY 公司名稱] · [YOUR_START - YOUR_END 起迄時間]</div>
+          <!-- TODO: 填入工作內容描述 -->
+          <p>[YOUR_DESCRIPTION 工作內容描述：負責的專案、使用的技術、達成的成果……]</p>
+        </div>
+
+        <!-- 經歷項目 2 -->
+        <div class="timeline-item reveal">
+          <h3>[YOUR_JOB_TITLE 職稱]</h3>
+          <div class="meta">[YOUR_COMPANY 公司名稱] · [YOUR_START - YOUR_END 起迄時間]</div>
+          <p>[YOUR_DESCRIPTION 工作內容描述……]</p>
+        </div>
+
+        <!-- 經歷項目 3 -->
+        <div class="timeline-item reveal">
+          <h3>[YOUR_JOB_TITLE 職稱]</h3>
+          <div class="meta">[YOUR_COMPANY 公司名稱] · [YOUR_START - YOUR_END 起迄時間]</div>
+          <p>[YOUR_DESCRIPTION 工作內容描述……]</p>
+        </div>
+        <!-- 需要更多經歷？複製一個 .timeline-item 區塊即可 -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Projects 區塊
+       3 個專案卡片佔位，請替換成真實專案
+       ============================================================ -->
+  <section id="projects">
+    <div class="container">
+      <h2 class="section-title reveal">作品集 · Projects</h2>
+      <p class="section-subtitle reveal">我做過的一些專案</p>
+
+      <div class="projects-grid">
+        <!-- 專案卡片 1 -->
+        <div class="project-card reveal">
+          <!-- TODO: 填入專案名稱 -->
+          <h3>[YOUR_PROJECT_NAME 專案名稱]</h3>
+          <!-- TODO: 填入技術標籤 -->
+          <div class="project-tags">
+            <span class="tag">ASP.NET Core</span>
+            <span class="tag">SQL Server</span>
+            <span class="tag">Azure</span>
+          </div>
+          <!-- TODO: 填入簡短描述 -->
+          <p>[YOUR_PROJECT_DESCRIPTION 簡短描述這個專案做了什麼、解決了什麼問題……]</p>
+          <!-- TODO: 把 # 換成真實 GitHub 連結 -->
+          <a href="#" class="btn btn-outline" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+
+        <!-- 專案卡片 2 -->
+        <div class="project-card reveal">
+          <h3>[YOUR_PROJECT_NAME 專案名稱]</h3>
+          <div class="project-tags">
+            <span class="tag">C#</span>
+            <span class="tag">RESTful API</span>
+          </div>
+          <p>[YOUR_PROJECT_DESCRIPTION 簡短描述……]</p>
+          <a href="#" class="btn btn-outline" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+
+        <!-- 專案卡片 3 -->
+        <div class="project-card reveal">
+          <h3>[YOUR_PROJECT_NAME 專案名稱]</h3>
+          <div class="project-tags">
+            <span class="tag">Entity Framework</span>
+            <span class="tag">JavaScript</span>
+          </div>
+          <p>[YOUR_PROJECT_DESCRIPTION 簡短描述……]</p>
+          <a href="#" class="btn btn-outline" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+        <!-- 需要更多專案？複製一個 .project-card 區塊即可 -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Contact 區塊
+       ============================================================ -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-box">
+        <h2 class="section-title reveal">聯絡方式 · Contact</h2>
+        <p class="reveal">
+          歡迎與我聯絡，討論全職工作機會或自由接案合作。
+        </p>
+        <div class="contact-actions reveal">
+          <!-- TODO: 把 your-email@example.com 換成你的真實 Email -->
+          <a href="mailto:[YOUR_EMAIL your-email@example.com]" class="btn btn-primary">
+            ✉ 寄信給我
+          </a>
+          <!-- TODO: 把 # 換成你的 GitHub Profile 連結，例如 https://github.com/your-username -->
+          <a href="#" class="btn btn-outline" target="_blank" rel="noopener">
+            GitHub Profile
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Footer
+       ============================================================ -->
+  <footer>
+    <!-- TODO: 年份可自行更新 -->
+    <p>© 2026 維治 · Full-Stack Web Developer</p>
+  </footer>
+
+  <!-- ============================================================
+       JavaScript：手機選單切換、scroll-in 動畫
+       ============================================================ -->
+  <script>
+    // ---- 手機版漢堡選單開合 ----
+    const navToggle = document.getElementById("navToggle");
+    const navLinks = document.getElementById("navLinks");
+
+    navToggle.addEventListener("click", function () {
+      navLinks.classList.toggle("open");
+    });
+
+    // 點擊任一選單連結後自動收合選單（手機版體驗）
+    navLinks.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        navLinks.classList.remove("open");
+      });
+    });
+
+    // ---- Scroll-in 進場動畫 ----
+    // 使用 IntersectionObserver 偵測元素是否進入畫面，
+    // 進入後加上 .visible class 觸發 CSS 動畫。
+    const revealElements = document.querySelectorAll(".reveal");
+
+    const observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target); // 觸發一次後就不再觀察
+          }
+        });
+      },
+      { threshold: 0.12 } // 元素露出約 12% 即觸發
+    );
+
+    revealElements.forEach(function (el) {
+      observer.observe(el);
+    });
+  </script>
 </body>
 </html>
